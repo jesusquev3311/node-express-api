@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import db from '../db/db';
 
-class todosControllers {
+class TodosController {
     // GET ALL TODOS
     getALlTodos(req, res) {
         return res.status(200).send({
@@ -96,16 +96,46 @@ class todosControllers {
             description: req.body.description || todoFound.description
         }
 
-        db.splice( itemIndex, 1, newTodo);
+        db.splice(itemIndex, 1, newTodo);
 
         return res.status(201).send({
-            success:true,
-            message:'Item Updated successfully',
+            success: true,
+            message: 'Item Updated successfully',
             newTodo
         });
 
     }
 
     // DELETE item
+    deleteTodo(req, res) {
+        const id = parseInt(req.params.id, 10);
 
+        let todoFound;
+        let itemIndex;
+
+        db.map((todo, index) => {
+            if (todo.id == id) {
+                todoFound = todo;
+                itemIndex = index;
+            }
+        })
+
+        if (!todoFound) {
+            return res.status(400).send({
+                success: false,
+                message: 'Item Doesn\'t exist'
+            });
+        }
+
+        db.splice(itemIndex, 1);
+
+        return res.status(200).send({
+            success: true,
+            message: 'Item Deleted successfully'
+        });
+    }
 }
+
+const todoController = new TodosController();
+
+export default todoController;
